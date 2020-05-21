@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
  * @description:
  */
 @Configuration
-//todo 标示这是一个资源服务器
 @EnableResourceServer
 //激活方法上的PreAuthorize注解
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)

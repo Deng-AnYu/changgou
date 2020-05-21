@@ -39,7 +39,13 @@ spring:
             - Path=/api/cart/**,/api/categoryReport/**,/api/orderConfig/**,/api/order/**,/api/orderItem/**,/api/orderLog/**,/api/preferential/**,/api/returnCause/**,/api/returnOrder/**,/api/returnOrderItem/**
           filters:
             - StripPrefix=1
-
+#            todo 这里可以把也用网关访问,但是要设置很多放行,所以先不做这个
+#        - id: changgou-user-auth
+#          uri: lb://user-auth
+#          predicates:
+#            - Path=/api/oauth/**
+#          filters:
+#            - StripPrefix=1
   application:
     name: gateway-web
   redis:

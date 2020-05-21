@@ -3,9 +3,7 @@ package com.changgou.user.feign;
 import com.changgou.user.pojo.User;
 import entity.Result;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author: Deng
@@ -24,5 +22,15 @@ public interface UserFeign {
     @GetMapping("/load/{id}")
     Result<User> loadById(@PathVariable(name = "id") String id);
 
+    /**
+     * 给指定的用户增加指定的积分
+     * @param username
+     * @param points
+     * @return
+     */
+    @PostMapping("/addPoints")
+    public Result addPoints(@RequestParam(name = "username") String username,
+                            @RequestParam(name = "points")Integer points);
+    
 
 }

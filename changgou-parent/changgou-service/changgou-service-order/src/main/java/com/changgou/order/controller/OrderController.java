@@ -1,5 +1,6 @@
 package com.changgou.order.controller;
 
+import com.changgou.order.config.TokenDecode;
 import com.changgou.order.pojo.Order;
 import com.changgou.order.service.OrderService;
 import com.github.pagehelper.PageInfo;
@@ -90,17 +91,7 @@ public class OrderController {
         return new Result(true,StatusCode.OK,"修改成功");
     }
 
-    /***
-     * 新增Order数据
-     * @param order
-     * @return
-     */
-    @PostMapping
-    public Result add(@RequestBody   Order order){
-        //调用OrderService实现添加Order
-        orderService.add(order);
-        return new Result(true,StatusCode.OK,"添加成功");
-    }
+
 
     /***
      * 根据ID查询Order数据
@@ -123,5 +114,20 @@ public class OrderController {
         //调用OrderService实现查询所有Order
         List<Order> list = orderService.findAll();
         return new Result<List<Order>>(true, StatusCode.OK,"查询成功",list) ;
+    }
+
+    @Autowired
+    private TokenDecode tokenDecode;
+    /***
+     * 新增Order数据
+     * @param order
+     * @return
+     */
+    @PostMapping
+    public Result add(Order order){
+        String username = tokenDecode.getUsername();
+        order.setUsername(username);
+        orderService.add(order);
+        return new Result(true,StatusCode.OK,"添加成功");
     }
 }

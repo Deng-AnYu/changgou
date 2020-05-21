@@ -17,7 +17,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 @SpringBootApplication
 @EnableEurekaClient
 @MapperScan(basePackages = {"com.changgou.auth.dao"})
-@EnableFeignClients(basePackages = "com.changgou.user.feign")
+@EnableFeignClients(basePackages = {"com.changgou.user.feign"})
 public class OAuthApplication {
 
     public static void main(String[] args) {

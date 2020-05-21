@@ -23,20 +23,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-//    @Autowired
-//    private UserFeign userFeign;
+    @Autowired
+    private UserFeign userFeign;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         System.out.println("获取到的用户名是：" + username);
         String permission = "ROLE_ADMIN,ROLE_USER";//设置权限
         //使用feign根据id获取数据库中的用户信息
-//        Result<com.changgou.user.pojo.User> userResult = userFeign.loadById(username);
-//        if (userResult.getData()==null){
-//            return null;
-//        }
-        return new User(username, passwordEncoder.encode("szitheima"),
-//        return new User(username, userResult.getData().getPassword(),
+        Result<com.changgou.user.pojo.User> userResult = userFeign.loadById(username);
+        if (userResult.getData()==null){
+            return null;
+        }
+//        return new User(username, passwordEncoder.encode("szitheima"),
+        return new User(username, userResult.getData().getPassword(),
                 AuthorityUtils.commaSeparatedStringToAuthorityList(permission));
     }
 }

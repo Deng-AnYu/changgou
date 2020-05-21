@@ -3,9 +3,7 @@ package com.changgou.goods.feign;
 import com.changgou.goods.pojo.Sku;
 import entity.Result;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,4 +30,12 @@ public interface SkuFeign {
      */
     @GetMapping("/{id}")
     Result<Sku> findById(@PathVariable(name = "id") Long id);
+
+    /**
+     * 从sku表中减少库存
+     * @param skuId
+     * @return
+     */
+    @RequestMapping("/deleteCount")
+    Result deleteCount(@RequestParam(name = "skuId") Long skuId, @RequestParam(name = "num")Integer num);
 }

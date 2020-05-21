@@ -68,4 +68,9 @@ public class CartServiceImpl implements CartService {
     public List<OrderItem> list(String username) {
         return redisTemplate.boundHashOps("Cart_"+username).values();
     }
+
+    @Override
+    public void clean(String username) {
+        redisTemplate.delete("Cart_"+username);
+    }
 }

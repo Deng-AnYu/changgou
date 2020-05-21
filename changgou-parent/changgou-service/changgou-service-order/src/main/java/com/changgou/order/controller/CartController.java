@@ -44,6 +44,7 @@ public class CartController {
         cartService.add(num, id, username);
         return new Result(true, StatusCode.OK, "添加购物车成功");
     }
+
     /***
      * 显示购物车列表
      */
@@ -52,6 +53,18 @@ public class CartController {
         String username = this.tokenDecode.getUsername();
 
         List<OrderItem> list = cartService.list(username);
-        return new Result(true, StatusCode.OK, "获取购物车列表成功",list);
+        return new Result(true, StatusCode.OK, "获取购物车列表成功", list);
     }
+
+    /**
+     * 根据username清除购物车数据
+     * @param username
+     * @return
+     */
+    @RequestMapping(value = "clean")
+    public Result clean(String username){
+        cartService.clean(username);
+        return new Result(true,StatusCode.OK,"清空购物车成功");
+    }
+
 }

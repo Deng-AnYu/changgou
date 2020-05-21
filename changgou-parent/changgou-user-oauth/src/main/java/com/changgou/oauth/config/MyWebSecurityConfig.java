@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -47,18 +48,39 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers(
+    "/user/login",
+                "/oauth/login",
+                "/css/**",
+                "/data/**",
+                "/fonts/**",
+                "/img/**",
+                "/js/**");
+
+    }
+
     //设置拦截器 设置为任意的请求都需要登录认证
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
                 //设置用户登录的路径放行
-                .antMatchers("/user/login").permitAll()
+                    //已经在全局设置中放行了,所以这里可以注释掉
+//                .antMatchers("/user/login",
+//                "/oauth/login",
+//                "/css",
+//                "/data",
+//                "/fonts",
+//                "/img",
+//                "/js"
+//                ).permitAll()
                 //剩下所有的路径都必须进行认证的配置
                 .anyRequest()
                 .authenticated()
                 .and()
-                .formLogin()
+                .formLogin().loginPage("/oauth/login")
 					.and()
                 .httpBasic();//注意 在使用/user/login?username=zhangsan&password=itheima的时候不要带basic否则就会进入basic登录了。不再使用username的方式登录
     }

@@ -73,4 +73,6 @@ public interface SkuService {
      * @return
      */
     List<Sku> findByStatus(String status);
+
+    int deleteCount(Long skuId, Integer num);
 }

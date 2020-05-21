@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.HashMap;
 import java.util.List;
 
 /****
@@ -209,5 +210,17 @@ public class SkuServiceImpl implements SkuService {
         Sku sku = new Sku();
         sku.setStatus(status);
         return skuMapper.select(sku);
+    }
+
+    @Override
+    public int deleteCount(Long skuId, Integer num) {
+        Sku sku = skuMapper.selectByPrimaryKey(skuId);
+        if (sku.getNum()>num) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("skuId",skuId);
+        map.put("num",num);
+        return skuMapper.deleteCount(map);
+        }
+        return 0;
     }
 }

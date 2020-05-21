@@ -1,9 +1,12 @@
 package com.changgou.filter;
 
 
+import com.changgou.util.JwtUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -23,6 +26,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
     //令牌头名字
     private static final String AUTHORIZE_TOKEN = "Authorization";
 
+
     /***
      * 全局过滤器
      * @param exchange
@@ -39,37 +43,43 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         String path = request.getURI().getPath();
 
         //如果是登录、goods等开放的微服务[这里的goods部分开放],则直接放行,这里不做完整演示，完整演示需要设计一套权限系统
+//        if (path.startsWith("/api/user/login")||path.startsWith("/api/oauth/login")) {
         if (path.startsWith("/api/user/login")) {
             //放行
             Mono<Void> filter = chain.filter(exchange);
             return filter;
         }
-
         //获取头文件中的令牌信息
         String tokent = request.getHeaders().getFirst(AUTHORIZE_TOKEN);
-
         //如果头文件中没有，则从请求参数中获取
         if (StringUtils.isEmpty(tokent)) {
             tokent = request.getQueryParams().getFirst(AUTHORIZE_TOKEN);
         }
-
+        if (StringUtils.isEmpty(tokent)) {
+            HttpCookie cookie = request.getCookies().getFirst(AUTHORIZE_TOKEN);
+            if (cookie != null) {
+                tokent = cookie.getValue();
+            }
+        }
         //如果为空，则输出错误代码
         if (StringUtils.isEmpty(tokent)) {
-            //设置方法不允许被访问，401错误代码
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            response.setStatusCode(HttpStatus.SEE_OTHER);
+            //            response.getHeaders().set("Location","http://localhost:8001/api/oauth/login?FROM="+request.getURI().toString());
+            //todo 这里可以把也用网关访问,但是要设置很多放行,所以先不做这个
+            response.getHeaders().set("Location", "http://localhost:9001/oauth/login?FROM=" + request.getURI().toString());
             return response.setComplete();
         }
-
-        //解析令牌数据
-        try {
+        //运行到了这里,说明已经登录了,有令牌,所以,把令牌再传递到下一个微服务
+        request.mutate().header(AUTHORIZE_TOKEN, "bearer" + tokent);
+//        //解析令牌数据
+//        try {
 //            Claims claims = JwtUtil.parseJWT(tokent);
-            request.mutate().header(AUTHORIZE_TOKEN,"Bearer"+tokent);
-        } catch (Exception e) {
-            e.printStackTrace();
-            //解析失败，响应401错误
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return response.setComplete();
-        }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            //解析失败，响应401错误
+//            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+//            return response.setComplete();
+//        }
 
         //放行
         return chain.filter(exchange);

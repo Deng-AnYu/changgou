@@ -173,4 +173,22 @@ public class UserController {
         User user = userService.findById(id);
         return new Result<User>(true, StatusCode.OK, "查询成功", user);
     }
+
+    /**
+     * 给指定的用户增加指定的积分
+     * @param username
+     * @param points
+     * @return
+     */
+    @PostMapping("/addPoints")
+    public Result addPoints(@RequestParam(name = "username") String username,@RequestParam(name = "points")Integer points){
+        System.out.println("username: "+username);
+        System.out.println("points: "+points);
+        int count=userService.addPoints(username,points);
+        if (count>0){
+            return new Result(true,StatusCode.OK,"添加积分成功");
+        }else {
+            return new Result(false,StatusCode.OK,"添加积分失败");
+        }
+    }
 }

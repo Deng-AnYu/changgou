@@ -28,4 +28,9 @@ public interface CartService {
      */
     List<OrderItem> list(String username);
 
+    /**
+     * 根据username清除购物车数据
+     * @param username
+     */
+    void clean(String username);
 }
