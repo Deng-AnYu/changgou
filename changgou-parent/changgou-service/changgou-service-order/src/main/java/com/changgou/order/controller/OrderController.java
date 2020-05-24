@@ -130,4 +130,10 @@ public class OrderController {
         orderService.add(order);
         return new Result(true,StatusCode.OK,"添加成功");
     }
+
+    @GetMapping("/test")
+    public Result testWork(String username){
+        orderService.test(username);
+        return new Result(true,StatusCode.OK,"添加成功");
+    }
 }

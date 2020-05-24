@@ -13,6 +13,9 @@ spring:
     port: 6379
   main:
     allow-bean-definition-overriding: true
+  rabbitmq:
+    host: 192.168.211.132
+    port: 5672
 eureka:
   client:
     service-url:
@@ -29,4 +32,12 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 10000
-          strategy: SEMAPHORE  # 线程共享
+          strategy: SEMAPHORE  # 线程共享 因为取出令牌的方法是从线程中取出,不设置线程共享的话,会使用不同的线程,就无法取出令牌
+mq:
+  pay:
+    exchange:
+      order: exchange.order
+    queue:
+      order: queue.order
+    routing:
+      key: queue.order

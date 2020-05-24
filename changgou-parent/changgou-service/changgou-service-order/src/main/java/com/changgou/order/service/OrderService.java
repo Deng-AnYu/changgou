@@ -4,6 +4,7 @@ import com.changgou.order.pojo.Order;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /****
  * @Author:admin
@@ -66,4 +67,18 @@ public interface OrderService {
      * @return
      */
     List<Order> findAll();
+
+    /**
+     * 支付成功
+     * @param map
+     */
+    void tradSuccess(Map<String, String> map);
+
+    /**
+     * 支付失败
+     * @param map
+     */
+    void tradFailed(Map<String, String> map);
+
+    void test(String testName);
 }

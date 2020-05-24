@@ -10,14 +10,18 @@ import com.changgou.order.service.OrderService;
 import com.changgou.user.feign.UserFeign;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.wxpay.sdk.WXPayUtil;
 import entity.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /****
  * @Author:admin
@@ -244,6 +248,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
+
+
     @Autowired
     private IdWorker idWorker;
     @Autowired
@@ -314,5 +320,43 @@ public class OrderServiceImpl implements OrderService {
         userFeign.addPoints(order.getUsername(),num*10);
         //清楚购物车中的数据 即清楚redis中的数据
         cartService.clean(order.getUsername());
+    }
+
+    @Override
+    public void tradSuccess(Map<String, String> map) {
+        //修改order表中的付款时间 支付状态 交易流水号
+        try {
+            String out_trade_no = map.get("out_trade_no");
+            Order order = orderMapper.selectByPrimaryKey(out_trade_no);
+            //设置付款时间
+            String time_end = map.get("time_end");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+            Date date = simpleDateFormat.parse(time_end);
+            order.setEndTime(date);
+            //设置交易流水
+            order.setTransactionId(map.get("transaction_id"));
+            //设置支付状态
+            order.setPayStatus("1");
+            orderMapper.updateByPrimaryKeySelective(order);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void tradFailed(Map<String, String> map) {
+        String out_trade_no = map.get("out_trade_no");
+        Order order = orderMapper.selectByPrimaryKey(out_trade_no);
+        order.setIsDelete("1");
+        orderMapper.updateByPrimaryKeySelective(order);
+
+    }
+
+    @Override
+    public void test(String testName) {
+        Order order = new Order();
+        order.setUsername(testName);
+        order.setId( WXPayUtil.generateNonceStr());
+        orderMapper.insertSelective(order);
     }
 }
